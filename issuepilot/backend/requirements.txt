@@ -1,0 +1,11 @@
+fastapi>=0.115
+uvicorn[standard]>=0.34
+pydantic>=2.10
+pydantic-settings>=2.7
+sqlalchemy>=2.0
+psycopg[binary]>=3.2
+httpx>=0.28
+scikit-learn>=1.6
+python-dotenv>=1.0
+openai>=1.60
+pytest>=8.3

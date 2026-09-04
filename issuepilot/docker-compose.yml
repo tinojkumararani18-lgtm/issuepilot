@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: issuepilot
+      POSTGRES_USER: issuepilot
+      POSTGRES_PASSWORD: issuepilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - issuepilot_db:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://issuepilot:issuepilot@db:5432/issuepilot
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-change-me}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      CORS_ORIGINS: http://localhost:5173
+      DUPLICATE_THRESHOLD: ${DUPLICATE_THRESHOLD:-0.55}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  issuepilot_db:
